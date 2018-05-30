@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2043
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fbx_convert_prog", "fbx_convert_prog\fbx_convert_prog.vcxproj", "{78E2B0C4-2FD6-4F13-ACB9-DCCEF0D56659}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fbx_convert_prog", "source\fbx_convert_prog.vcxproj", "{78E2B0C4-2FD6-4F13-ACB9-DCCEF0D56659}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,5 +24,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7D02B130-B90F-46EF-BFB8-6477E34BCD66}
 	EndGlobalSection
 EndGlobal

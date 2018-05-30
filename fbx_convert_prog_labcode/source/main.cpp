@@ -101,8 +101,8 @@ public:
 	GLuint Texture2;
 
 	//animation matrices:
-	mat4 animmat[200];
-	int animmatsize=0;
+	mat4 animmat[200], animmat2[200];
+	int animmatsize=0, animmatsize2 = 0;
 
 	void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 	{
@@ -162,16 +162,21 @@ public:
 
 	/*Note that any gl calls must always happen after a GL state is initialized */
 	bone *root = NULL;
-	int size_stick = 0;
-	all_animations all_animation;
+	int size_stick = 0, size_stick2 = 0;
+	all_animations all_animation, all_animation2;
 	void initGeom(const std::string& resourceDirectory)
 	{
 
-		for (int ii = 0; ii < 200; ii++)
+		for (int ii = 0; ii < 200; ii++) {
 			animmat[ii] = mat4(1);
+			//animmat2[ii] = mat4(1);
+		}	
 		
-		readtobone("LeBron.fbx",&all_animation,&root);
+		readtobone("LeBron.fbx",&all_animation,&root);						// animation 1
 		root->set_animations(&all_animation,animmat,animmatsize);
+
+		//readtobone("Bowling.fbx", &all_animation2, &root2);					// animation 2
+		//root2->set_animations(&all_animation2, animmat2, animmatsize2);
 		
 			
 		// Initialize mesh.
@@ -179,11 +184,6 @@ public:
 		shape->loadMesh(resourceDirectory + "/skybox.obj");
 		shape->resize();
 		shape->init();
-
-		plane = make_shared<Shape>();
-		plane->loadMesh(resourceDirectory + "/FA18.obj");
-		plane->resize();
-		plane->init();
 
 		//generate the VAO
 		glGenVertexArrays(1, &VertexArrayID);
@@ -317,11 +317,14 @@ public:
 		static double totaltime_untilframe_ms = 0;
 		totaltime_untilframe_ms += frametime*1000.0;
 
-		for (int ii = 0; ii < 200; ii++)
+		for (int ii = 0; ii < 200; ii++) {
 			animmat[ii] = mat4(1);
+			//animmat2[ii] = mat4(1);
+		}
 
 
 		//animation frame system
+		float t = 1.0;
 		int anim_step_width_ms = 8490 / 204;
 		static int frame = 0;
 		if (totaltime_untilframe_ms >= anim_step_width_ms)
@@ -329,7 +332,7 @@ public:
 			totaltime_untilframe_ms = 0;
 			frame++;
 			}
-		root->play_animation(frame,"avatar_0_fbx_tmp");	//name of current animation	
+		root->play_animation(frame,"avatar_0_fbx_tmp", t);	//name of current animation	
 
 
 		// Get current frame buffer size.
@@ -375,12 +378,6 @@ public:
 		glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, &M[0][0]);
 		glUniform3fv(prog->getUniform("campos"), 1, &mycam.pos[0]);	
 		glBindVertexArray(VertexArrayID);
-		//actually draw from vertex 0, 3 vertices
-		//glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, (void*)0);
-		mat4 Vi = glm::transpose(V);
-		Vi[0][3] = 0;
-		Vi[1][3] = 0;
-		Vi[2][3] = 0;
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, Texture);
 
@@ -388,6 +385,7 @@ public:
 		glm::mat4 S = glm::scale(glm::mat4(1.0f), glm::vec3(0.01f, 0.01f, 0.01f));
 		M = TransZ * S;
 		glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, &M[0][0]);
+		//glUniformMatrix4fv(prog->getUniform("Manim"), 200, GL_FALSE, &animmat[0][0][0]);
 		glUniformMatrix4fv(prog->getUniform("Manim"), 200, GL_FALSE, &animmat[0][0][0]);
 		glDrawArrays(GL_LINES, 4, size_stick-4);
 		glBindVertexArray(0);		

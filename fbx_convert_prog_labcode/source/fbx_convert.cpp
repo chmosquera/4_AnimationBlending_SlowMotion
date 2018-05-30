@@ -725,7 +725,7 @@ void DisplayListCurveKeys(FbxAnimCurve* pCurve, FbxProperty* pProperty)
 int readtobone(string file, all_animations *all_animation,bone **proot)
 {
 
-	//ifstream fileHandle("fgdfg");
+	// open file for reading
 	string name_of_file;
 	cout << endl << "filename:" << endl;
 	name_of_file = file;
