@@ -739,7 +739,7 @@ int readtobone(string file, all_animations *all_animation,bone **proot)
 		cout << endl << "file exists!" << endl;
 	fclose(checkfile);
 	
-	if (proot == NULL) return 0;					// ADDED - don't reconstruct bone if NULL is given
+	//if (proot == NULL) return 0;					// ADDED - don't reconstruct bone if NULL is given
 
 	// Initialize the SDK manager. This object handles all our memory management.
 	FbxManager* lSdkManager = FbxManager::Create();
@@ -770,39 +770,39 @@ int readtobone(string file, all_animations *all_animation,bone **proot)
 
 	string create_file_path;
 	
-	
-	///////////////////
-	///	Model (Skeleton)
-	/////////////////
-	// Print the nodes of the scene and their attributes recursively.
-	// Note that we are not printing the root node because it should
-	// not contain any attributes.
-	FbxNode* lRootNode = lScene->GetRootNode();
-	int count_bones=0;
-	int child_count = lRootNode->GetChildCount();
-	for (int i = 0; i < child_count; i++)//nur einen knochen machen
-		CountBones(lRootNode->GetChild(i),count_bones);
+	if (proot != NULL) {
+		///////////////////
+		///	Model (Skeleton)
+		/////////////////
+		// Print the nodes of the scene and their attributes recursively.
+		// Note that we are not printing the root node because it should
+		// not contain any attributes.
+		FbxNode* lRootNode = lScene->GetRootNode();
+		int count_bones = 0;
+		int child_count = lRootNode->GetChildCount();
+		for (int i = 0; i < child_count; i++)//nur einen knochen machen
+			CountBones(lRootNode->GetChild(i), count_bones);
 
-	cout << endl;
-	cout << "Skeleton" << endl;
-	cout << endl;
-	cout << "count bones: " << count_bones << endl;
-	
-	
+		cout << endl;
+		cout << "Skeleton" << endl;
+		cout << endl;
+		cout << "count bones: " << count_bones << endl;
+
+
 		bone *root = new bone;
 		*proot = root;
 
-	// stop constructing bones
+		// stop constructing bones
 
-	if (lRootNode)
-	{
-		int anz = lRootNode->GetChildCount();
-		for (int i = 0; i < lRootNode->GetChildCount(); i++)//nur einen knochen machen
+		if (lRootNode)
 		{
-			PrintNode(root, lRootNode->GetChild(i), -1);
+			int anz = lRootNode->GetChildCount();
+			for (int i = 0; i < lRootNode->GetChildCount(); i++)//nur einen knochen machen
+			{
+				PrintNode(root, lRootNode->GetChild(i), -1);
+			}
 		}
 	}
-	
 
 	cout << "----------------------------------------------------------------------------------------------------" << endl;
 	///////////////////
