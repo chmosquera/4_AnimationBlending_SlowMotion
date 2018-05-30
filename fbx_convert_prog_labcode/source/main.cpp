@@ -144,6 +144,11 @@ public:
 		{
 			mycam.d = 0;
 		}
+		if (key == GLFW_KEY_SPACE && action == GLFW_RELEASE) {
+			if (animationID) animationID = 0;
+			else animationID = 1;
+			cout << animationID << endl;
+		}
 	}
 
 	// callback for the mouse when clicked move the triangle when helper functions
@@ -172,8 +177,8 @@ public:
 			animmat[ii] = mat4(1);
 		}	
 		
-		readtobone("LeBron.fbx",&all_animation,&root);						// animation 1
-		readtobone("Bowling.fbx", &all_animation, NULL);					// animation 2
+		readtobone("Run.fbx",&all_animation,&root);						// animation 1
+		readtobone("Walk.fbx", &all_animation, NULL);					// animation 2
 		root->set_animations(&all_animation, animmat, animmatsize);
 		
 			
@@ -331,10 +336,16 @@ public:
 		cout << frame << endl;
 
 		// loops through 2nd animation
-		if (frame > root->animation[1]->keyframes.size()) {
+		if (frame > root->animation[animationID]->keyframes.size()) {
 			frame = 0;
 		}
-		root->play_animation(frame,"avatar_0_fbx_tmp", t);	//name of current animatio
+		//root->play_animation(frame,"avatar_0_fbx_tmp", animationID, t);	//name of current animatio
+		if (animationID) {		// run
+			root->play_animation(frame, "Clip_Run_Left_45Deg_Cycle", t);	//name of current animation
+		}
+		else {
+			root->play_animation(frame, "Clip_Walk_Cycle", t);	//name of current animation
+		}
 	
 
 
