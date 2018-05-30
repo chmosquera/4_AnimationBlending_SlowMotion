@@ -35,7 +35,6 @@ class bone
 {
 public:
 	vector<animation_per_bone*> animation; //all the animations of the bone
-	vector<animation_per_bone*> animation2;	
 	string name;
 	vec3 pos, pos2;
 	quat q, q2;

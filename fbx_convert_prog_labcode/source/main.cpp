@@ -316,7 +316,6 @@ public:
 
 		for (int ii = 0; ii < 200; ii++) {
 			animmat[ii] = mat4(1);
-			animmat2[ii] = mat4(1);
 		}
 
 
