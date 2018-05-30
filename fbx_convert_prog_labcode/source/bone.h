@@ -24,6 +24,7 @@ class all_animations
 	{
 	public:
 		vector<animation_per_bone> animations;
+		vector<animation_per_bone> animations2;
 
 	};
 
@@ -41,7 +42,7 @@ public:
 	bone *parent = NULL;
 	vector<bone*> kids;			
 	unsigned int index;			//a unique number for each bone, at the same time index of the animatiom matrix array
-	mat4 *mat = NULL;			//address of one lement from the animation matrix array
+	mat4 *mat = NULL;			//address of one element from the animation matrix array
 	// searches for the animation and sets the animation matrix element to the recent matrix gained from the keyframe
 	void play_animation(float keyframenumber, string animationname, float t)
 		{
@@ -92,18 +93,19 @@ public:
 			if (all_anim->animations[ii].bone == name)
 				animation.push_back(&all_anim->animations[ii]);
 
-		mat = &matrices[index];
+		mat = &matrices[index];	// every bone holds the address of its corresponding array
 		animsize++;
 
 		for (int i = 0; i < kids.size(); i++)
 			kids[i]->set_animations(all_anim, matrices, animsize);
+
 		}
 
 	// created a space to load a second animation - possible make this into a vecot later on so I can load multiple animations 
 	void set_animations2(all_animations *all_anim, mat4 *matrices, int &animsize)
 	{
 		for (int ii = 0; ii < all_anim->animations.size(); ii++)
-			if (all_anim->animations[ii].bone == name)
+			if (all_anim->animations[ii].bone == name)				// if the names match, then push back the animation
 				animation2.push_back(&all_anim->animations[ii]);
 
 		mat = &matrices[index];
@@ -111,6 +113,7 @@ public:
 
 		for (int i = 0; i < kids.size(); i++)
 			kids[i]->set_animations(all_anim, matrices, animsize);
+
 	}
 
 };

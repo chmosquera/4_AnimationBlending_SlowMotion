@@ -162,21 +162,18 @@ public:
 
 	/*Note that any gl calls must always happen after a GL state is initialized */
 	bone *root = NULL;
-	int size_stick = 0, size_stick2 = 0;
-	all_animations all_animation, all_animation2;
+	int size_stick = 0;
+	all_animations all_animation;
 	void initGeom(const std::string& resourceDirectory)
 	{
 
 		for (int ii = 0; ii < 200; ii++) {
 			animmat[ii] = mat4(1);
-			//animmat2[ii] = mat4(1);
 		}	
 		
 		readtobone("LeBron.fbx",&all_animation,&root);						// animation 1
-		root->set_animations(&all_animation,animmat,animmatsize);
-
-		//readtobone("Bowling.fbx", &all_animation2, &root2);					// animation 2
-		//root2->set_animations(&all_animation2, animmat2, animmatsize2);
+		readtobone("Bowling.fbx", &all_animation, NULL);					// animation 2
+		root->set_animations(&all_animation, animmat, animmatsize);
 		
 			
 		// Initialize mesh.
@@ -319,7 +316,7 @@ public:
 
 		for (int ii = 0; ii < 200; ii++) {
 			animmat[ii] = mat4(1);
-			//animmat2[ii] = mat4(1);
+			animmat2[ii] = mat4(1);
 		}
 
 

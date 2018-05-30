@@ -719,9 +719,8 @@ void DisplayListCurveKeys(FbxAnimCurve* pCurve, FbxProperty* pProperty)
 
 /**
 * Main function - loads the hard-coded fbx file,
-* and prints its contents in an xml format to stdout.
+* and constructu a bone structure.
 */
-
 int readtobone(string file, all_animations *all_animation,bone **proot)
 {
 
@@ -740,6 +739,7 @@ int readtobone(string file, all_animations *all_animation,bone **proot)
 		cout << endl << "file exists!" << endl;
 	fclose(checkfile);
 	
+	if (proot == NULL) return 0;					// ADDED - don't reconstruct bone if NULL is given
 
 	// Initialize the SDK manager. This object handles all our memory management.
 	FbxManager* lSdkManager = FbxManager::Create();
@@ -792,14 +792,17 @@ int readtobone(string file, all_animations *all_animation,bone **proot)
 		bone *root = new bone;
 		*proot = root;
 
-	if (lRootNode) 	
+	// stop constructing bones
+
+	if (lRootNode)
 	{
 		int anz = lRootNode->GetChildCount();
 		for (int i = 0; i < lRootNode->GetChildCount(); i++)//nur einen knochen machen
-			{
-			PrintNode(root,lRootNode->GetChild(i), -1);
-			}			
+		{
+			PrintNode(root, lRootNode->GetChild(i), -1);
+		}
 	}
+	
 
 	cout << "----------------------------------------------------------------------------------------------------" << endl;
 	///////////////////
