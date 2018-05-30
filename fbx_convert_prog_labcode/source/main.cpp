@@ -103,6 +103,7 @@ public:
 	//animation matrices:
 	mat4 animmat[200], animmat2[200];
 	int animmatsize=0, animmatsize2 = 0;
+	int animationID = 0;	// which animation to play
 
 	void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 	{
@@ -248,7 +249,6 @@ public:
 		glUseProgram(prog->pid);
 		glUniform1i(Tex1Location, 0);
 		glUniform1i(Tex2Location, 1);
-
 	}
 
 	//General OGL initialization - set OGL state here
@@ -321,14 +321,21 @@ public:
 
 		//animation frame system
 		float t = 1.0;
-		int anim_step_width_ms = 8490 / 204;
+		int anim_step_width_ms = 8490 / 204;		// what are these values?
 		static int frame = 0;
 		if (totaltime_untilframe_ms >= anim_step_width_ms)
 			{
 			totaltime_untilframe_ms = 0;
 			frame++;
 			}
-		root->play_animation(frame,"avatar_0_fbx_tmp", t);	//name of current animation	
+		cout << frame << endl;
+
+		// loops through 2nd animation
+		if (frame > root->animation[1]->keyframes.size()) {
+			frame = 0;
+		}
+		root->play_animation(frame,"avatar_0_fbx_tmp", t);	//name of current animatio
+	
 
 
 		// Get current frame buffer size.

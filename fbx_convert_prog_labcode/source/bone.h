@@ -43,8 +43,7 @@ public:
 	unsigned int index;			//a unique number for each bone, at the same time index of the animatiom matrix array
 	mat4 *mat = NULL;			//address of one element from the animation matrix array
 	// searches for the animation and sets the animation matrix element to the recent matrix gained from the keyframe
-	void play_animation(float keyframenumber, string animationname, float t)
-		{
+	void play_animation(float keyframenumber, string animationname, float t) {
 		for (int i = 0; i < animation.size(); i++)
 			if (animation[i]->name == animationname)
 				{
@@ -68,7 +67,13 @@ public:
 				}
 		for (int i = 0; i < kids.size(); i++)
 			kids[i]->play_animation(keyframenumber,animationname, t);
-		}
+	}
+
+	void calc_matrix(float keyframenumber) {
+
+	}
+
+
 	//writes into the segment positions and into the animation index VBO
 	void write_to_VBOs(vec3 origin, vector<vec3> &vpos, vector<unsigned int> &imat)
 		{
