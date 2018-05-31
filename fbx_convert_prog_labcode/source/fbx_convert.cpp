@@ -739,7 +739,6 @@ int readtobone(string file, all_animations *all_animation,bone **proot)
 		cout << endl << "file exists!" << endl;
 	fclose(checkfile);
 	
-	//if (proot == NULL) return 0;					// ADDED - don't reconstruct bone if NULL is given
 
 	// Initialize the SDK manager. This object handles all our memory management.
 	FbxManager* lSdkManager = FbxManager::Create();

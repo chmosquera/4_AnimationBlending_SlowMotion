@@ -66,19 +66,6 @@ public:
 };
 camera mycam;
 
-/*
-class calc_matrix {
-
-	float fframe;
-	int frameA = fframe;
-	int frameB = fframe + 1;
-	float t = fframe - (int)fframe;
-	quat qa = boneanim[0]->keyframes[frameA].quat;
-	quat qb = boneanim[0]->keyframes[frameB].quat;
-	quat qr = linintp(qa, qb, t);
-	mat4 R = mat4(qr);
-	vec
-} */
 
 class Application : public EventCallbacks
 {
@@ -103,7 +90,9 @@ public:
 	//animation matrices:
 	mat4 animmat[200], animmat2[200];
 	int animmatsize=0, animmatsize2 = 0;
-	int animationID = 0;	// which animation to play
+	int ToggleAnim2 = 0;	// which animation to play
+	int ChangeAnimation = 0;
+	int SLOW = 0;
 
 	void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 	{
@@ -145,10 +134,13 @@ public:
 			mycam.d = 0;
 		}
 		if (key == GLFW_KEY_SPACE && action == GLFW_RELEASE) {
-			if (animationID) animationID = 0;
-			else animationID = 1;
-			cout << animationID << endl;
+			if (ToggleAnim2) ToggleAnim2 = 0;
+			else ToggleAnim2 = 1;
+			cout << "play animation: " << ToggleAnim2 << endl;
 		}
+		if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_PRESS) ChangeAnimation = !ChangeAnimation;
+		if (key == GLFW_KEY_RIGHT_SHIFT && action == GLFW_PRESS) SLOW = !SLOW;
+		//if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_RELEASE) ChangeAnimation = 0;
 	}
 
 	// callback for the mouse when clicked move the triangle when helper functions
@@ -215,7 +207,7 @@ public:
 		glBindVertexArray(0);
 
 
-		/************ Load Textures **********/
+		/************ Textures **********/
 		int width, height, channels;
 		char filepath[1000];
 
@@ -314,8 +306,6 @@ public:
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		double frametime = get_last_elapsed_time();
-		static double totaltime_ms=0;
-		totaltime_ms += frametime*1000.0;
 		static double totaltime_untilframe_ms = 0;
 		totaltime_untilframe_ms += frametime*1000.0;
 
@@ -323,30 +313,56 @@ public:
 			animmat[ii] = mat4(1);
 		}
 
-
+		
 		//animation frame system
 		float t = 1.0;
-		int anim_step_width_ms = 8490 / 204;		// what are these values?
-		static int frame = 0;
-		if (totaltime_untilframe_ms >= anim_step_width_ms)
-			{
-			totaltime_untilframe_ms = 0;
-			frame++;
-			}
-		cout << frame << endl;
+		//int anim_step_width_ms = 8490 / 204;		// what are these values?
+		int anim_step_width_ms;
+		static float frame = 0.0f;
 
-		// loops through 2nd animation
-		if (frame > root->animation[animationID]->keyframes.size()) {
-			frame = 0;
+		// setup animation step width in ms
+		if (!ToggleAnim2)
+			anim_step_width_ms = root->getDuration("Clip_Walk_Cycle") / root->getKeyFrameCount("Clip_Walk_Cycle");
+		else
+			anim_step_width_ms = root->getDuration("Clip_Run_Left_45Deg_Cycle") / root->getKeyFrameCount("Clip_Run_Left_45Deg_Cycle");
+
+		if (totaltime_untilframe_ms >= anim_step_width_ms) {
+			totaltime_untilframe_ms = 0;
+			if (!SLOW) frame++;
+			else frame += 0.1;					// slow motion mode
 		}
-		//root->play_animation(frame,"avatar_0_fbx_tmp", animationID, t);	//name of current animatio
-		if (animationID) {		// run
-			root->play_animation(frame, "Clip_Run_Left_45Deg_Cycle", t);	//name of current animation
+		
+		//if (frame > root->animation[ToggleAnim2]->keyframes.size()) {	// reset - loop through animation
+			//frame = 0;
+		//}
+
+		// play animation - not transitioning
+		if (!ChangeAnimation) {
+			if (!ToggleAnim2) {		// anim_1
+				root->play_animation(frame, "Clip_Walk_Cycle", t);	//name of current animation
+			}
+			else {					// anim_2
+				root->play_animation(frame, "Clip_Run_Left_45Deg_Cycle", t);	//name of current animation
+			}
 		}
-		else {
-			root->play_animation(frame, "Clip_Walk_Cycle", t);	//name of current animation
+		//cout << "frame: " << frame << endl;
+
+		// transitioning
+		static float transtimer = 0.0;
+		if (ChangeAnimation) {			// start transition
+			cout << "timer: " << transtimer << endl;
+			if (!ToggleAnim2) {						// anim_1 -> anim_2
+				root->change_animation(frame, "Clip_Walk_Cycle", "Clip_Run_Left_45Deg_Cycle", transtimer);
+			}
+			else									// anim_2 -> anim_1
+				root->change_animation(frame, "Clip_Run_Left_45Deg_Cycle", "Clip_Walk_Cycle", transtimer);
+			transtimer += 0.1;
 		}
-	
+		if (transtimer > 1.0) {		// end transition, go back to regular state
+			ToggleAnim2 = !ToggleAnim2;
+			ChangeAnimation = 0;
+			transtimer = 0;
+		}
 
 
 		// Get current frame buffer size.
@@ -395,13 +411,15 @@ public:
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, Texture);
 
-		glm::mat4 TransZ = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -8));
+		float w = -90.0f;
+		glm::mat4 TransZ = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -5.0f, -20));
+		glm::mat4 R = rotate(mat4(1.0), w, vec3(0.0, 1.0, 0.0));
 		glm::mat4 S = glm::scale(glm::mat4(1.0f), glm::vec3(0.01f, 0.01f, 0.01f));
-		M = TransZ * S;
+		M = TransZ * R * S;
 		glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, &M[0][0]);
 		//glUniformMatrix4fv(prog->getUniform("Manim"), 200, GL_FALSE, &animmat[0][0][0]);
 		glUniformMatrix4fv(prog->getUniform("Manim"), 200, GL_FALSE, &animmat[0][0][0]);
-		glDrawArrays(GL_LINES, 4, size_stick-4);
+		glDrawArrays(GL_LINES, 6, size_stick-6);
 		glBindVertexArray(0);		
 		prog->unbind();
 
