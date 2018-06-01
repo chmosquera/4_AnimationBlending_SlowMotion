@@ -331,10 +331,6 @@ public:
 			if (!SLOW) frame++;
 			else frame += 0.1;					// slow motion mode
 		}
-		
-		//if (frame > root->animation[ToggleAnim2]->keyframes.size()) {	// reset - loop through animation
-			//frame = 0;
-		//}
 
 		// play animation - not transitioning
 		if (!ChangeAnimation) {
@@ -363,7 +359,6 @@ public:
 			ChangeAnimation = 0;
 			transtimer = 0;
 		}
-
 
 		// Get current frame buffer size.
 		int width, height;

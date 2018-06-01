@@ -85,9 +85,6 @@ public:
 	}
 
 	void change_animation(float keyframenumber, string animationname, string animationname2, float t) {
-		//float t = keyframenumber - (int)keyframenumber;			// smooth intp between frames
-
-
 		if (animation.size() < 2) {
 			cout << "Two Animations required.";
 			return;
@@ -104,23 +101,23 @@ public:
 			}
 		}
 		
-		
+		frame = (int)keyframenumber % animation[0]->keyframes.size();	// only give frames within animation duration
+
 		// ------- time warp animations so they have same duration --------
 		int frame_1 = 0, frame_2 = 0;
 		if (startAnim->keyframes.size() > endAnim->keyframes.size()) {					// get ratio of longer anim : shorter anim
 			float scale = (float)startAnim->keyframes.size() / (float)endAnim->keyframes.size();
-			frame = (int)keyframenumber % endAnim->keyframes.size();	// only give frames within animation duration
+			//frame = (int)keyframenumber % endAnim->keyframes.size();	// only give frames within animation duration
 			frame_1 = frame/scale;
-			frame_2 = frame;// *scale;
-			//cout << "scale: " << scale << endl;
+			frame_2 = frame;
 		}
 		else {
 			float scale = (float)endAnim->keyframes.size() / (float)startAnim->keyframes.size();
-			frame = (int)keyframenumber % startAnim->keyframes.size();	// only give frames within animation duration
-			frame_1 = frame;// *scale;
+			//frame = (int)keyframenumber % startAnim->keyframes.size();	// only give frames within animation duration
+			frame_1 = frame;
 			frame_2 = frame/scale;
-			//cout << "scale: " << scale << endl;
 		}
+	//	cout << "frame: " << frame << " frame 1: " << frame_1 << " frame 2: " << frame_2 << endl;
 
 		// -------------- Animation 1 --------------
 		if (startAnim->keyframes.size() > frame_1+2 && endAnim->keyframes.size() > frame_2+2)
@@ -166,32 +163,6 @@ public:
 			for (int i = 0; i < kids.size(); i++)
 				kids[i]->change_animation(keyframenumber, animationname, animationname2, t);
 		}
-
-
-		/*/
-		// ------------ Interpolate between two animations ---------------
-		float t = 0;
-
-		quat QR = slerp(qa, qa_2, t);
-		vec3 TR = mix(ta, ta_2, vec3(t));
-		//cout << "vec t: " + vec3(t).x + ", " + vec3(t).y + ", " + vec3(t).z << endl;
-		mat4 R = mat4(QR);
-		mat4 T = translate(mat4(1.0), TR);
-		mat4 M = T * R;
-
-		if (mat)
-		{
-			mat4 parentmat = mat4(1);
-			if (parent)
-				parentmat = *parent->mat;
-			*mat = parentmat * M;
-		}
-		else
-			*mat = mat4(1);
-	
-		for (int i = 0; i < kids.size(); i++)
-			kids[i]->change_animation(keyframenumber, animationname, animationname2);
-			*/
 	}
 
 
